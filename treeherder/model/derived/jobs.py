@@ -791,7 +791,7 @@ into chunks of chunk_size size. Returns the number of result sets deleted"""
         """
 
         replacement = ",".join(["%s"] * len(revision_list))
-        replacement = " AND revision IN (" + replacement + ") "
+        replacement = " AND revision.revision IN (" + replacement + ") "
 
         proc = "jobs.selects.get_revision_resultset_lookup"
         lookups = self.execute(
