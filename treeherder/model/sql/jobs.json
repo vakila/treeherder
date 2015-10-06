@@ -99,13 +99,13 @@
         },
         "set_result_set":{
 
-            "sql":"INSERT INTO `result_set` (`author`, `revision_hash`,`push_timestamp`, `active_status`)
-                SELECT ?,?,?,?
+            "sql":"INSERT INTO `result_set` (`author`, `revision_hash`,`revision`,`push_timestamp`, `active_status`)
+                SELECT ?,?,?,?,?
                 FROM DUAL
                 WHERE NOT EXISTS (
                     SELECT `revision_hash`, `push_timestamp`
                     FROM `result_set`
-                    WHERE `revision_hash` = ?
+                    WHERE `revision_hash` = ? or `revision` = ?
                 )",
 
             "host_type":"master_host"

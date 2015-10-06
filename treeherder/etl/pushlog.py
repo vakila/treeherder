@@ -43,7 +43,7 @@ class HgPushlogTransformerMixin(object):
                 # we need to get the short version of a revision
                 # because buildapi doesn't provide the long one
                 # and we need to match it
-                revision['revision'] = change['node'][0:12]
+                revision['revision'] = change['node']
                 revision['author'] = change['author']
                 revision['branch'] = change['branch']
                 revision['comment'] = change['desc']

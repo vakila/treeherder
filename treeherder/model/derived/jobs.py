@@ -1711,14 +1711,17 @@ into chunks of chunk_size size. Returns the number of result sets deleted"""
         # TODO: Confirm whether we need to do a lookup in this loop in the
         #   memcache to reduce query overhead
         for result in result_sets:
-
+            top_revision = result['revisions'][-1]['revision']
             revision_hash_placeholders.append(
                 [
                     result.get('author', 'unknown@somewhere.com'),
                     result['revision_hash'],
+                    top_revision,
                     result['push_timestamp'],
                     result.get('active_status', 'active'),
-                    result['revision_hash']
+                    result['revision_hash'],
+                    top_revision
+
                 ]
             )
             where_in_list.append('%s')

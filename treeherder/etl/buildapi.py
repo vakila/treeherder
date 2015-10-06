@@ -115,7 +115,7 @@ class Builds4hTransformerMixin(object):
                 logger.warning("skipping builds-4hr job since no revision found: %s", prop['buildername'])
                 continue
 
-            prop['revision'] = prop['revision'][0:12]
+            prop['revision'] = prop['revision']
 
             if prop['revision'] == prop.get('l10n_revision', None):
                 # Some l10n jobs specify the l10n repo revision under 'revision', rather

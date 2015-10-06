@@ -127,4 +127,4 @@ class Command(BaseCommand):
                                  option_collection_hash,
                                  series_properties),
                              r.testrun_id, r.push_timestamp, delta,
-                             pct_change, r.t, revision[0:12]]))
+                             pct_change, r.t, revision]))
