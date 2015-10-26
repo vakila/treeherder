@@ -677,8 +677,9 @@ treeherder.directive('thCloneJobs', [
         };
 
         var updateJobs = function(platformData){
+            console.log("updating now...");
             angular.forEach(platformData, function(value, platformId) {
-
+                console.log("camd", value);
                 if(value.resultsetId !== this.resultset.id){
                     //Confirm we are the correct result set
                     return;
@@ -779,10 +780,11 @@ treeherder.directive('thCloneJobs', [
                     _.bind(filterJobs, scope, element)();
                 });
 
-            $rootScope.$on(
-                thEvents.jobsLoaded, function(ev, platformData){
-                    _.bind(updateJobs, scope, platformData)();
-                });
+            //$rootScope.$on(
+            //    thEvents.jobsLoaded, function(ev, platformData){
+            //        console.log("camd");
+            //        _.bind(updateJobs, scope, platformData)();
+            //    });
 
             $rootScope.$on(
                 thEvents.jobsClassified, function(ev, pinnedJobs){
@@ -807,6 +809,7 @@ treeherder.directive('thCloneJobs', [
 
             $rootScope.$on(
                 thEvents.applyNewJobs, function(ev, resultSetId){
+                    console.log("got new jobs");
                     if(scope.resultset.id === resultSetId){
 
                         var rsMap = ThResultSetStore.getResultSetsMap($rootScope.repoName);

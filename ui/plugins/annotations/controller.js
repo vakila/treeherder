@@ -48,7 +48,7 @@ treeherder.controller('AnnotationsPluginCtrl', [
 
                         // also be sure the job object in question gets updated to the latest
                         // classification state (in case one was added or removed).
-                        ThResultSetStore.fetchJobs($scope.repoName, [$scope.job.id]);
+                        //ThResultSetStore.fetchJobs($scope.repoName, [$scope.job.id]);
 
                         $rootScope.$emit(thEvents.jobsClassified, {jobs: jobs});
                     },

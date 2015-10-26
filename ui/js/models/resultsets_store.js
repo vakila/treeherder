@@ -29,7 +29,7 @@ treeherder.factory('ThResultSetStore', [
         // the primary data model
         var repositories = {};
 
-        var resultSetPollers = {};
+        //var resultSetPollers = {};
         var resultSetPollInterval = 60000;
         var jobPollInterval = 60000;
         var lastJobUpdate = null;
@@ -466,44 +466,6 @@ treeherder.factory('ThResultSetStore', [
             return grMapElement;
         };
 
-        /**
-         * Fetch the job objects for the ids in ``jobFetchList`` and update them
-         * in the data model.
-         */
-        var fetchJobs = function(repoName, jobFetchList) {
-            $log.debug("fetchJobs", repoName, jobFetchList);
-
-            // we could potentially have very large lists of jobs.  So we need
-            // to chunk this fetching.
-            var count = 40;
-            var error_callback = function(data) {
-                $log.error("Error fetching jobs: " + data);
-            };
-            var unavailableJobs = [];
-            while (jobFetchList.length > 0) {
-                var jobFetchSlice = jobFetchList.splice(0, count);
-                ThJobModel.get_list(repoName, {
-                    job_guid__in: jobFetchSlice.join(),
-                    count: count
-                })
-                    .then(function(jobsFetched){
-                        // if there are jobs unfetched, enqueue them for the next run
-                        var guids_fetched = _.pluck(jobsFetched, "job_guid");
-                        var guids_unfetched = _.difference(jobFetchSlice, guids_fetched);
-                        if(guids_unfetched.length > 0){
-                            $log.debug("re-adding " +
-                                       guids_unfetched.length + "job to the fetch queue");
-                            unavailableJobs.push.apply(unavailableJobs, guids_unfetched);
-                        }
-                        return jobsFetched;
-                    },error_callback)
-                    .then(_.bind(updateJobs, $rootScope, repoName));
-            }
-            // retry to fetch the unfetched jobs later
-            _.delay(fetchJobs, 10000, repoName, unavailableJobs);
-
-        };
-
         var aggregateJobPlatform = function(repoName, job, platformData){
 
             var resultsetId, platformName, platformOption, platformAggregateId,
@@ -567,27 +529,6 @@ treeherder.factory('ThResultSetStore', [
             }
 
             platformData[platformAggregateId].jobs.push(job);
-        };
-
-        /***
-         * update resultsets and jobs with those that were in the update queue
-         * @param jobList List of jobs to be placed in the data model and maps
-         */
-        var updateJobs = function(repoName, jobList) {
-
-            $log.debug("number of jobs returned for add/update: ", jobList.length);
-
-            var platformData = {};
-
-            var jobUpdated, i;
-
-            for (i = 0; i < jobList.length; i++) {
-                aggregateJobPlatform(repoName, jobList[i], platformData);
-            }
-
-            if(!_.isEmpty(platformData) && repoName === $rootScope.repoName){
-                $timeout($rootScope.$emit(thEvents.jobsLoaded, platformData));
-            }
         };
 
         /******
@@ -1040,7 +981,6 @@ treeherder.factory('ThResultSetStore', [
 
             addRepository: addRepository,
             aggregateJobPlatform: aggregateJobPlatform,
-            fetchJobs: fetchJobs,
             fetchResultSets: fetchResultSets,
             getAllShownJobs: getAllShownJobs,
             getJobMap: getJobMap,
