@@ -34,23 +34,27 @@ treeherder.controller('AnnotationsPluginCtrl', [
             var jobMap = ThResultSetStore.getJobMap($rootScope.repoName);
             var job = jobMap[key].job_obj;
 
-            // this $evalAsync will be sure that the * is added or removed in
-            // the job in the jobs table when this change takes place.
-            $scope.$evalAsync(function() {job.failure_classification_id = 1;});
-            ThResultSetStore.updateUnclassifiedFailureMap($rootScope.repoName, job);
-
             classification.delete()
                 .then(
                     function(){
+                        // update the classifications list to remove the one we just deleted
+                        _.remove($scope.classifications, function(n) {
+                            return n === classification;
+                        });
+                        // set to 1 if no more classifications
+                        var newFailureId = $scope.classifications.length ? $scope.classifications[0].failure_classification_id : 1;
+                        // update the job * based on whether any classifications remain
+                        $scope.$evalAsync(function() {job.failure_classification_id = newFailureId;});
+                        ThResultSetStore.updateUnclassifiedFailureMap($rootScope.repoName, job);
+
+
                         thNotify.send("Classification successfully deleted", "success", false);
                         var jobs = {};
                         jobs[$scope.selectedJob.id] = $scope.selectedJob;
-
-                        // also be sure the job object in question gets updated to the latest
-                        // classification state (in case one was added or removed).
-                        //ThResultSetStore.fetchJobs($scope.repoName, [$scope.job.id]);
-
                         $rootScope.$emit(thEvents.jobsClassified, {jobs: jobs});
+
+
+
                     },
                     function(){
                         thNotify.send("Classification deletion failed", "danger", true);
