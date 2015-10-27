@@ -172,6 +172,18 @@ treeherder.factory('ThResultSetStore', [
                             resultSet
                         );
                         $rootScope.$emit(thEvents.applyNewJobs, resultSetId);
+                        //var platformData = {};
+                        //var jid;
+                        //
+                        //for (jid in resultSet.jobList) {
+                        //    if (resultSet.jobList.hasOwnProperty(jid)) {
+                        //        aggregateJobPlatform(
+                        //            $rootScope.repoName, jobList[jid], platformData
+                        //        );
+                        //    }
+                        //}
+                        //
+                        //$rootScope.$emit(thEvents.jobsLoaded, platformData);
                     });
             }else{
                 return $q.defer().resolve();

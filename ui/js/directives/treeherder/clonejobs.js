@@ -778,11 +778,10 @@ treeherder.directive('thCloneJobs', [
                     _.bind(filterJobs, scope, element)();
                 });
 
-            //$rootScope.$on(
-            //    thEvents.jobsLoaded, function(ev, platformData){
-            //        console.log("camd");
-            //        _.bind(updateJobs, scope, platformData)();
-            //    });
+            $rootScope.$on(
+                thEvents.jobsLoaded, function(ev, platformData){
+                    _.bind(updateJobs, scope, platformData)();
+                });
 
             $rootScope.$on(
                 thEvents.jobsClassified, function(ev, pinnedJobs){
