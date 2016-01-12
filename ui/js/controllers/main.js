@@ -297,6 +297,11 @@ treeherderApp.controller('MainCtrl', [
             return ThResultSetStore.getUnclassifiedFailureCount(repoName);
         };
 
+        $scope.getFilteredUnclassifiedFailureCount = function(repoName) {
+            console.log("called getFiltered");
+            return ThResultSetStore.getFilteredUnclassifiedFailureCount(repoName);
+        };
+
         $scope.isSkippingExclusionProfiles = $location.search().exclusion_profile === 'false';
 
         $scope.toggleExcludedJobs = function() {

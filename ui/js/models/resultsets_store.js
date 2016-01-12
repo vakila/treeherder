@@ -216,6 +216,7 @@ treeherder.factory('ThResultSetStore', [
                     jobMap:{},
                     grpMap:{},
                     unclassifiedFailureMap: {},
+                    filteredUnclassifiedFailureMap: {},
                     //used as the offset in paging
                     rsMapOldestTimestamp:null,
                     resultSets:[],
@@ -387,12 +388,32 @@ treeherder.factory('ThResultSetStore', [
             } else {
                 delete repositories[repoName].unclassifiedFailureMap[job.job_guid];
             }
+            updateFilteredUnclassifiedFailureMap(repoName, job);
+        };
+
+        var updateFilteredUnclassifiedFailureMap = function(repoName, job) {
+            if (thJobFilters.showJob(job) && thJobFilters.isJobUnclassifiedFailure(job)) {
+                console.log("showing unclassified job", job.job_type_symbol, job.platform);
+                repositories[repoName].filteredUnclassifiedFailureMap[job.job_guid] = true;
+            } else {
+                delete repositories[repoName].filteredUnclassifiedFailureMap[job.job_guid];
+            }
+
         };
 
         var getUnclassifiedFailureCount = function(repoName) {
             if (_.has(repositories, repoName)) {
 
                 return _.size(repositories[repoName].unclassifiedFailureMap);
+
+            }
+            return 0;
+        };
+
+        var getFilteredUnclassifiedFailureCount = function(repoName) {
+            if (_.has(repositories, repoName)) {
+
+                return _.size(repositories[repoName].filteredUnclassifiedFailureMap);
 
             }
             return 0;
@@ -1151,6 +1172,7 @@ treeherder.factory('ThResultSetStore', [
             getResultSetsMap: getResultSetsMap,
             getSelectedJob: getSelectedJob,
             getUnclassifiedFailureCount: getUnclassifiedFailureCount,
+            getFilteredUnclassifiedFailureCount: getFilteredUnclassifiedFailureCount,
             isNotLoaded: isNotLoaded,
             loadRevisions: loadRevisions,
             setSelectedJob: setSelectedJob,
