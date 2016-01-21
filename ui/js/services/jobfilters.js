@@ -117,8 +117,6 @@ treeherder.factory('thJobFilters', [
         var cachedFieldFilters = {};
         var cachedFilterParams;
 
-        var filteredUnclassifiedFailureCount = 0;
-
         /**
          * Checks for a filter change and, if detected, updates the cached filter
          * values from the query string.  Then publishes the global event
@@ -133,15 +131,6 @@ treeherder.factory('thJobFilters', [
                 $rootScope.$emit(thEvents.globalFilterChanged);
             }
 
-        });
-
-        /**
-         * If global Filters have changed, then reset the count of
-         * unclassified filters that pass the filters
-         */
-        $rootScope.$on(thEvents.globalFilterChanged, function() {
-            console.log("clearing filteredUnclassifiedFailures");
-            filteredUnclassifiedFailureCount = 0;
         });
 
         var getNewFilterParams = function() {
@@ -200,19 +189,15 @@ treeherder.factory('thJobFilters', [
          * @param job - the job we are checking against the filters
          */
         var showJob = function(job) {
-            var show = true;
+
             // test against resultStatus, classifiedState and field filters
             if (!_.contains(cachedResultStatusFilters, thResultStatus(job))) {
-                show = false;
+                return false;
             }
-            if (show && !_checkClassifiedStateFilters(job)) {
-                show = false;
+            if (!_checkClassifiedStateFilters(job)) {
+                return false;
             }
-            if (show && !_checkFieldFilters(job)) {
-                show = false;
-            }
-
-            return show;
+            return _checkFieldFilters(job);
         };
 
         var _checkClassifiedStateFilters = function(job) {
@@ -447,10 +432,6 @@ treeherder.factory('thJobFilters', [
                     !_isJobClassified(job));
         };
 
-        var getFilteredUnclassifiedFailureCount = function() {
-            return filteredUnclassifiedFailureCount;
-        };
-
         var _isJobClassified = function(job) {
             return !_.contains(UNCLASSIFIED_IDS, job.failure_classification_id);
         };
@@ -593,7 +574,6 @@ treeherder.factory('thJobFilters', [
             getFieldFiltersArray: getFieldFiltersArray,
             getFieldFiltersObj: getFieldFiltersObj,
             getResultStatusArray: getResultStatusArray,
-            getFilteredUnclassifiedFailureCount: getFilteredUnclassifiedFailureCount,
             isJobUnclassifiedFailure: isJobUnclassifiedFailure,
             isFilterSetToShow: isFilterSetToShow,
             stripFiltersFromQueryString: stripFiltersFromQueryString,

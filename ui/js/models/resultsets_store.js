@@ -180,6 +180,10 @@ treeherder.factory('ThResultSetStore', [
             }
         };
 
+        $rootScope.$on(thEvents.filteringComplete, function() {
+            updateFilteredUnclassifiedFailureCount($rootScope.repoName);
+        });
+
         var addRepository = function(repoName){
             //Initialize a new repository in the repositories structure
 
@@ -216,7 +220,7 @@ treeherder.factory('ThResultSetStore', [
                     jobMap:{},
                     grpMap:{},
                     unclassifiedFailureMap: {},
-                    filteredUnclassifiedFailureMap: {},
+                    filteredUnclassifiedFailureCount: 0,
                     //used as the offset in paging
                     rsMapOldestTimestamp:null,
                     resultSets:[],
@@ -384,20 +388,21 @@ treeherder.factory('ThResultSetStore', [
 
         var updateUnclassifiedFailureMap = function(repoName, job) {
             if (thJobFilters.isJobUnclassifiedFailure(job)) {
-                repositories[repoName].unclassifiedFailureMap[job.job_guid] = true;
+                repositories[repoName].unclassifiedFailureMap[job.job_guid] = job;
             } else {
                 delete repositories[repoName].unclassifiedFailureMap[job.job_guid];
             }
-            updateFilteredUnclassifiedFailureMap(repoName, job);
+            updateFilteredUnclassifiedFailureCount(repoName);
         };
 
-        var updateFilteredUnclassifiedFailureMap = function(repoName, job) {
-            if (thJobFilters.showJob(job) && thJobFilters.isJobUnclassifiedFailure(job)) {
-                console.log("showing unclassified job", job.job_type_symbol, job.platform);
-                repositories[repoName].filteredUnclassifiedFailureMap[job.job_guid] = true;
-            } else {
-                delete repositories[repoName].filteredUnclassifiedFailureMap[job.job_guid];
-            }
+        var updateFilteredUnclassifiedFailureCount = function(repoName) {
+            console.log("updateFilteredUnclassifiedFailureCount called");
+            repositories[repoName].filteredUnclassifiedFailureCount = 0;
+            _.forEach(repositories[repoName].unclassifiedFailureMap, function(value, key) {
+                if (value.visible) {
+                    repositories[repoName].filteredUnclassifiedFailureCount += 1;
+                }
+            });
 
         };
 
@@ -412,9 +417,7 @@ treeherder.factory('ThResultSetStore', [
 
         var getFilteredUnclassifiedFailureCount = function(repoName) {
             if (_.has(repositories, repoName)) {
-
-                return _.size(repositories[repoName].filteredUnclassifiedFailureMap);
-
+                return repositories[repoName].filteredUnclassifiedFailureCount;
             }
             return 0;
         };

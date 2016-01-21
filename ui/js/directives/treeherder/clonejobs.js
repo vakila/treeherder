@@ -604,6 +604,8 @@ treeherder.directive('thCloneJobs', [
                 filterPlatform(platform);
             });
 
+            // rendering and filtering is complete, send event
+            $rootScope.$emit(thEvents.filteringComplete);
         };
 
         var isGroupExpanded = function(group) {
@@ -772,6 +774,9 @@ treeherder.directive('thCloneJobs', [
                     renderJobTableRow($(rowEl), jobTdEl, value.jobGroups);
                 }
             }, this);
+
+            // rendering and filtering is complete, send event
+            $rootScope.$emit(thEvents.filteringComplete);
         };
 
         var scrollToElement = function(el, duration) {
@@ -799,6 +804,7 @@ treeherder.directive('thCloneJobs', [
                     if(rs.id === scope.resultset.id){
                         _.bind(addRevisions, scope, rs, element)();
                     }
+                    $rootScope.$emit(thEvents.filteringComplete);
                 });
 
             $rootScope.$on(
@@ -811,6 +817,7 @@ treeherder.directive('thCloneJobs', [
             $rootScope.$on(
                 thEvents.globalFilterChanged, function(ev, filterData){
                     _.bind(filterJobs, scope, element)();
+                    //$rootScope.$emit(thEvents.filteringComplete);
                 });
 
             $rootScope.$on(
@@ -848,6 +855,7 @@ treeherder.directive('thCloneJobs', [
                     if(!_.isEmpty(platformData)){
                         _.bind(updateJobs, scope, platformData)();
                     }
+                    $rootScope.$emit(thEvents.filteringComplete);
                 });
 
             $rootScope.$on(
@@ -872,6 +880,7 @@ treeherder.directive('thCloneJobs', [
                             resultsetAggregateId,
                             rsMap[resultSetId].rs_obj);
                     }
+                    $rootScope.$emit(thEvents.filteringComplete);
                 });
 
             // Show runnable jobs when users press 'Add new jobs'

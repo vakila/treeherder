@@ -184,6 +184,9 @@ treeherder.provider('thEvents', function() {
             // fired when a global filter has changed
             globalFilterChanged: "status-filter-changed-EVT",
 
+            // fired after clonejobs has finished filtering jobs
+            filteringComplete: "status-filtering-complete-EVT",
+
             groupStateChanged: "group-state-changed-EVT",
 
             toggleRevisions: "toggle-revisions-EVT",
