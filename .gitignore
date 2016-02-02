@@ -22,7 +22,8 @@ treeherder/media/
 treeherder/static/
 treeherder/webapp/log_cache/
 ui/js/config/local.conf.js
-
+# babel will generate js files from jsx files under ui/js/components/
+ui/js/componenents/*.js
 # supervisor
 .nfs*
 *.pid
