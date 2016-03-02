@@ -208,6 +208,8 @@ CELERY_QUEUES = (
 
 
 class CeleryRouter(object):
+    queue_by_key = {item.routing_key: item.name for item in CELERY_QUEUES}
+
     def route_for_task(self, task, args=None, kwargs=None):
         if task == 'celery.chord_unlock':
             callback_signature = args[1]
@@ -215,7 +217,9 @@ class CeleryRouter(object):
             if options:
                 routing_key = options.get('routing_key')
                 if routing_key:
-                    return {'routing_key': routing_key}
+                    rv = {'queue': self.queue_by_key[routing_key],
+                          'routing_key': routing_key}
+                    return rv
 
 
 CELERY_ROUTES = [CeleryRouter()]
