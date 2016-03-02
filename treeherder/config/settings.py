@@ -211,6 +211,7 @@ class CeleryRouter(object):
     queue_by_key = {item.routing_key: item.name for item in CELERY_QUEUES}
 
     def route_for_task(self, task, args=None, kwargs=None):
+        import logging
         if task == 'celery.chord_unlock':
             callback_signature = args[1]
             options = callback_signature.get('options')
@@ -219,6 +220,7 @@ class CeleryRouter(object):
                 if routing_key:
                     rv = {'queue': self.queue_by_key[routing_key],
                           'routing_key': routing_key}
+                    logging.error("Routed to: %r" % (rv,))
                     return rv
 
 
