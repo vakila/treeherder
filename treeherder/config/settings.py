@@ -224,6 +224,39 @@ class CeleryRouter(object):
                     return rv
 
 
+def monkeypatch_producer():
+    import logging
+    import traceback
+    from celery.backends.base import BaseBackend
+    from celery.app.amqp import TaskProducer
+    from kombu import Producer
+
+    router = CeleryRouter()
+
+    def publish(self, *args, **kwargs):
+        body = args[0]
+        logging.error("Published task %s %s %s %s" % (body['id'], body['task'], body['retries'], kwargs['routing_key']))
+        if kwargs['routing_key'] == "default":
+            route = router.route_for_task(body['task'])
+            if route:
+                key = route.get('routing_key')
+                if key:
+                    logging.error("Published task rerouted")
+                    kwargs['routing_key'] = key
+        return Producer.publish(self, *args, **kwargs)
+
+    TaskProducer.publish = publish
+
+    # _original_fallback = BaseBackend.fallback_chord_unlock
+    # def fallback_chord_unlock(self, *args, **kwargs):
+    #     logging.error("%s %s" % (args, kwargs))
+    #     logging.error("".join(traceback.format_stack()))
+    #     return _original_fallback(self, *args, **kwargs)
+    # BaseBackend.fallback_chord_unlock = fallback_chord_unlock
+
+
+monkeypatch_producer()
+
 CELERY_ROUTES = [CeleryRouter()]
 
 CELERY_ACCEPT_CONTENT = ['json']
