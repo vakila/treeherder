@@ -226,8 +226,6 @@ class CeleryRouter(object):
 
 def monkeypatch_producer():
     import logging
-    import traceback
-    from celery.backends.base import BaseBackend
     from celery.app.amqp import TaskProducer
     from kombu import Producer
 
@@ -247,15 +245,7 @@ def monkeypatch_producer():
 
     TaskProducer.publish = publish
 
-    # _original_fallback = BaseBackend.fallback_chord_unlock
-    # def fallback_chord_unlock(self, *args, **kwargs):
-    #     logging.error("%s %s" % (args, kwargs))
-    #     logging.error("".join(traceback.format_stack()))
-    #     return _original_fallback(self, *args, **kwargs)
-    # BaseBackend.fallback_chord_unlock = fallback_chord_unlock
-
-
-monkeypatch_producer()
+# monkeypatch_producer()
 
 CELERY_ROUTES = [CeleryRouter()]
 

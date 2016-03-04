@@ -67,17 +67,15 @@ def create_task_set(tasks, callback):
 
     num_tasks = len(tasks)
 
-    sync_row = TaskSetMeta(
-        count = num_tasks
-    )
+    sync_row = TaskSetMeta(count=num_tasks)
     sync_row.save()
 
     task_set_data = {"callback": callback,
                      "taskset_id": sync_row.id}
 
-    for task in tasks:
-        task.kwargs["_task_set"] = task_set_data
-        task.apply_async()
+    for task_signature in tasks:
+        task_signature.kwargs["_task_set"] = task_set_data
+        task_signature.apply_async()
 
 
 @task(name='parse-job-logs', max_retries=10)
