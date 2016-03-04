@@ -1696,7 +1696,6 @@ into chunks of chunk_size size. Returns the number of result sets deleted"""
             raise ValueError("Invalid log parsing priority '%s'" % priority)
 
         task_types = {
-            "mozlog_json": ("parse_json_log", "log_parser_json"),
             "errorsummary_json": ("store_error_summary", "store_error_summary"),
             "buildbot_text": ("parse_log", "log_parser")
         }
