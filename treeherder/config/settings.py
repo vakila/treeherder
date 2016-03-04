@@ -527,10 +527,7 @@ if env.bool('IS_HEROKU', default=False):
         memcacheify().get('default')
     )
 
-CELERY_RESULT_BACKEND = "db+%s" % (env('DATABASE_URL'),)
-
-if env.bool('IS_HEROKU', default=False):
-    CELERY_RESULT_ENGINE_OPTIONS = {'connect_args': DATABASES['default']['OPTIONS']}
+CELERY_IGNORE_RESULT = True
 
 API_HOSTNAME = SITE_URL
 
