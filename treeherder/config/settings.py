@@ -48,7 +48,7 @@ PERFHERDER_ALERTS_MAX_AGE = timedelta(weeks=2)
 
 # Create hashed+gzipped versions of assets during collectstatic,
 # which will then be served by WhiteNoise with a suitable max-age.
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
@@ -65,6 +65,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 MIDDLEWARE_CLASSES = [
+    # Use the WhiteNoise middleware so the UI can be served by gunicorn in
+    # production, avoiding the need for Apache/nginx on Heroku. WhiteNoise
+    # will serve the Django static files at /static/ and also those in the
+    # directory referenced by WHITENOISE_ROOT at the site root.
+    'treeherder.config.whitenoise_custom.CustomWhiteNoise',
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -102,6 +107,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
+    # Disable Django's own staticfiles handling in development,
+    # so WhiteNoise is used for both production and locally.
+    'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'django.contrib.admin',
     # 3rd party apps

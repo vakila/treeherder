@@ -1,16 +1,18 @@
 import re
 
-from whitenoise.django import DjangoWhiteNoise
+from whitenoise.middleware import WhiteNoiseMiddleware
 
 
-class CustomWhiteNoise(DjangoWhiteNoise):
+class CustomWhiteNoise(WhiteNoiseMiddleware):
+    """TODO"""
 
     # Matches grunt-cache-busting's style of hash filenames.
     IMMUTABLE_FILE_RE = re.compile(r'\.min-[a-f0-9]{32}\.(js|css)$')
     INDEX_NAME = 'index.html'
 
-    def add_files(self, *args, **kwargs):
-        super(CustomWhiteNoise, self).add_files(*args, **kwargs)
+    def update_files_dictionary(self, *args):
+        """TODO"""
+        super(CustomWhiteNoise, self).update_files_dictionary(*args)
         index_page_suffix = "/" + self.INDEX_NAME
         index_name_length = len(self.INDEX_NAME)
         index_files = {}
@@ -21,6 +23,7 @@ class CustomWhiteNoise(DjangoWhiteNoise):
         self.files.update(index_files)
 
     def find_file(self, url):
+        """TODO"""
         # In debug mode, find_file() is used to serve files directly from the filesystem
         # instead of using the list in `self.files`, so we append the index filename so
         # that will be served if present.
@@ -29,6 +32,7 @@ class CustomWhiteNoise(DjangoWhiteNoise):
         return super(CustomWhiteNoise, self).find_file(url)
 
     def is_immutable_file(self, path, url):
+        """TODO"""
         # Support grunt-cache-busting's style of hash filenames. eg:
         #   index.min-feae259e2c205af67b0e91306f9363fa.js
         if self.IMMUTABLE_FILE_RE.search(url):
