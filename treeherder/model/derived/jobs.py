@@ -1024,7 +1024,7 @@ into chunks of chunk_size size. Returns the number of result sets deleted"""
                     logger.exception(e)
                     raise e
                 else:
-                    newrelic.agent.record_exception(params={"job": datum})
+                    newrelic.agent.record_exception(params=datum)
 
                 # skip any jobs that hit errors in these stages.
                 continue
